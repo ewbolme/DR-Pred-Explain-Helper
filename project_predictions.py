@@ -13,20 +13,23 @@ def submit_request_to_model(
 ) -> pd.DataFrame:
     """A function which obtains prediction explanations for a dataset from a model in a project
 
-    Args:
+    args:
         data: a pandas dataset with data in the same format the model was trained on
         project_id: the id of the project for the model of intrest
         model_id: the id of the model of intrest
         max_explanations: the number of prediction explanations to return
         shap_bool: a boolean value indicating whether to return shap based prediction explanations
 
-    Returns:
+    returns:
         data: A pandas dataframe containing the prediciton explanations
 
-
-    * Uploads a dataset to the AI catalog
-    * Load the dataset into the project as a project dataset
-    * Queues up feature impact and a prediction job (needed to get the explanations)"""
+    steps:
+        * Uploads a dataset to the AI catalog
+        * Load the dataset into the project as a project dataset
+        * Queues up feature impact and a prediction job (needed to get the explanations)
+        * Waits for the job to finish
+        * Obtains the resultant dataset as a pandas DataFrame
+    """
 
     project = dr.Project.get(project_id=project_id)
     model = dr.Model.get(project=project_id, model_id=model_id)
@@ -43,7 +46,7 @@ def submit_request_to_model(
             shap_matrix = shap_matrix_job.get_result_when_complete()
             return shap_matrix.get_as_dataframe()
         else:
-            print("This model does not support shaply values")
+            print("This model does not support shaply values returning unmodified data")
             return data
 
     else:
